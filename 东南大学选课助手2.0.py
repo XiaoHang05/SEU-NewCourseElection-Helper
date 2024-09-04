@@ -62,7 +62,7 @@ def Login():
                                   , options=chrome_options)
         driver.maximize_window()
         driver.set_window_size(500, 10000)
-        url = "http://newxk.urp.seu.edu.cn/xsxk/profile/index.html"
+        url = "https://newxk.urp.seu.edu.cn/xsxk/profile/index.html"
         driver.get(url)
         
         print("start to login\n")
@@ -119,7 +119,7 @@ def Login():
 
         checkUrl = driver.current_url
         print("\n"+checkUrl+"\n")
-        if not checkUrl.startswith("http://newxk.urp.seu.edu.cn/xsxk/elective/"):
+        if not checkUrl.startswith("https://newxk.urp.seu.edu.cn/xsxk/elective/"):
             print('Login fail')
             error = True
             return
