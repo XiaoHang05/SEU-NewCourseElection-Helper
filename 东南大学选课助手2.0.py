@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 import random
 import time
 import datetime
@@ -58,7 +59,7 @@ def Login():
     global elecTurn
 
     try:
-        driver = webdriver.Chrome(executable_path=r"C:/Program Files (x86)/Google/Chrome/Application/chromedriver"
+        driver = webdriver.Chrome(service=Service(r"C:/Program Files (x86)/Google/Chrome/Application/chromedriver")
                                   , options=chrome_options)
         driver.maximize_window()
         driver.set_window_size(500, 10000)
