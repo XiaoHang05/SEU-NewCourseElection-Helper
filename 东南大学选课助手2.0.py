@@ -58,16 +58,11 @@ def Login():
     global elecTurn
 
     try:
-        print('\ta')
         driver = webdriver.Chrome(executable_path=r"C:/Program Files (x86)/Google/Chrome/Application/chromedriver"
                                   , options=chrome_options)
-        print('\tb')
         driver.maximize_window()
-        print('\tc')
         driver.set_window_size(500, 10000)
-        print('\td')
         url = "https://newxk.urp.seu.edu.cn/xsxk/profile/index.html"
-        print('\te')
         driver.get(url)
         
         print("start to login\n")
@@ -134,7 +129,7 @@ def Login():
         print("login successfully!\n")
         return
 
-    except Exception as e:
+    except IndexError as e:
         print('\tlogin fail')
         error = True
         return
