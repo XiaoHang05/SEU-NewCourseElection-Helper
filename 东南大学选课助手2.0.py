@@ -58,16 +58,16 @@ def Login():
     global elecTurn
 
     try:
-        print(1)
+        print('\t1a')
         driver = webdriver.Chrome(executable_path=r"C:/Program Files (x86)/Google/Chrome/Application/chromedriver"
                                   , options=chrome_options)
-        print(2)
+        print('\t2a')
         driver.maximize_window()
-        print(3)
+        print('\t3a')
         driver.set_window_size(500, 10000)
-        print(4)
+        print('\t4a')
         url = "https://newxk.urp.seu.edu.cn/xsxk/profile/index.html"
-        print(5)
+        print('\t5a')
         driver.get(url)
         
         print("start to login\n")
@@ -135,7 +135,7 @@ def Login():
         return
 
     except Exception as e:
-        print('\tlogin failaaa')
+        print('\tlogin fail')
         error = True
         return
 
