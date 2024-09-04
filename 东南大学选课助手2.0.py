@@ -58,11 +58,16 @@ def Login():
     global elecTurn
 
     try:
+        print(1)
         driver = webdriver.Chrome(executable_path=r"C:/Program Files (x86)/Google/Chrome/Application/chromedriver"
                                   , options=chrome_options)
+        print(2)
         driver.maximize_window()
+        print(3)
         driver.set_window_size(500, 10000)
+        print(4)
         url = "https://newxk.urp.seu.edu.cn/xsxk/profile/index.html"
+        print(5)
         driver.get(url)
         
         print("start to login\n")
