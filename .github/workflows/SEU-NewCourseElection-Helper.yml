@@ -25,4 +25,4 @@ jobs:
         CLASS: ${{ secrets.class }}
       run: |
         bash Init_Building_Dependencies.sh
-        python3 东南大学选课助手.py
+        python3 东南大学选课助手2.0.py
