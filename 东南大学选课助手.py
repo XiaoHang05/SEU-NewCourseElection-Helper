@@ -197,7 +197,7 @@ def main():
 
         return
 
-    except Exception as e:
+    except IndexError as e:
         print('\tterminated', flush=True)
         error = True
         return
