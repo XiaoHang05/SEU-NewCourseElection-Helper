@@ -183,7 +183,7 @@ def main():
                 break
 
     except Exception as e:
-        print(f"\nError occurred: {e}", flush=True)
+        print(f"\nError occurred", flush=True)
         error = True
         return
 
