@@ -31,9 +31,9 @@ def Login():
         url = "https://newxk.urp.seu.edu.cn/xsxk/profile/index.html"
         driver.get(url)
         
-        print("start to login\n",flush=True)
+        print("start to login\n")
 
-        print("\nplease wait.", end="",flush=True)
+        print("\nplease wait.", end="")
         successLogin=False
         LoginTurn=1
 
@@ -52,7 +52,7 @@ def Login():
             driver.find_element_by_xpath(
                 '//*[@id="verifyCode"]').send_keys(str(0))
             driver.find_element_by_xpath('//*[@id="loginDiv"]/button').click()
-            print(".", end="",flush=True)
+            print(".", end="")
             time.sleep(1)
             try:
                 driver.find_element_by_xpath(
@@ -60,41 +60,41 @@ def Login():
                 successLogin=True
             except Exception as eLogin:
                 successLogin=False
-                print(".", end="",flush=True)
+                print(".", end="")
                 LoginTurn=LoginTurn+1
                 time.sleep(1)
 
         time.sleep(1)
         
-        print(".", end="",flush=True)
+        print(".", end="")
 
         time.sleep(1)
         driver.find_element_by_xpath(
            '//*[@id="xsxkapp"]/div[4]/div/div[3]/span/button[1]').click()
-        print(".", end="",flush=True)
+        print(".", end="")
 
         time.sleep(1)
         driver.find_element_by_xpath(
             '//*[@id="stundentinfoDiv"]/button').click()
-        print(".", end="",flush=True)
+        print(".", end="")
 
         time.sleep(2)
-        print(".\n\n",flush=True)
+        print(".\n\n")
 
         checkUrl = driver.current_url
-        print("\n"+checkUrl+"\n",flush=True)
+        print("\n"+checkUrl+"\n")
         if not checkUrl.startswith("https://newxk.urp.seu.edu.cn/xsxk/elective/"):
-            print('Login fail',flush=True)
+            print('Login fail')
             error = True
             return
         
         
 
-        print("login successfully!\n",flush=True)
+        print("login successfully!\n")
         return
 
     except Exception as e:
-        print('\tlogin fail',flush=True)
+        print('\tlogin fail')
         error = True
         return
 
@@ -103,105 +103,359 @@ def main():
 
     try:
         finded = False
-        print("finding.", end="", flush=True)
+        print("finding.", end="")
 
-        while classes_wanted:  # 当classes_wanted非空时继续抢课
-            for class_wanted in classes_wanted.copy():  # 遍历classes_wanted的副本
-                driver.find_element_by_xpath('//*[@id="xsxkapp"]/div/div[1]/ul/li[1]/i').click()
-                time.sleep(0.5)
-                print(".", end="", flush=True)
-                driver.find_element_by_xpath('//*[@id="xsxkapp"]/div/div[1]/ul/li[2]').click()
-                time.sleep(1)
-                print(".", end="", flush=True)
 
-                curpages = 1
+        driver.find_element_by_xpath('//*[@id="xsxkapp"]/div/div[1]/ul/li[1]/i').click()
+        time.sleep(0.5)
+        print(".", end="")
+        driver.find_element_by_xpath('//*[@id="xsxkapp"]/div/div[1]/ul/li[2]').click()
+        time.sleep(1)
+        print(".", end="")
+
+        curpages = 1
+
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(str(curpages))
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[1]').click()
+        time.sleep(1)
+        print(".", end="")
+        pages = driver.find_element_by_class_name('number.active').text
+
+        while str(pages) == str(curpages) and not finded:
+            class_list = driver.find_elements_by_xpath(
+                '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[1]/div')
+            for cl in class_list:
+                class_num = cl.find_element_by_xpath(
+                    './/*[@class="el-card__body"]/div[2]/div/div[2]/span').text
+                print(".", end="")
+                if class_wanted[0:-5] == class_num:
+                    cl.click()
+                    time.sleep(0.2)
+                    print(".", end="")
+                    teacher_list=cl.find_elements_by_xpath(
+                        './/*[@class="card-list course-jxb el-row"]/div')
+                    for tl in teacher_list:
+                        print(".", end="")
+                        teacher_num=tl.find_element_by_xpath(
+                            './/*[@class="card-item head"]/div[1]/span[1]').text
+                        if class_wanted[-3:-1]==teacher_num[1:3]:
+                            print("\n\nfinded\n")
+                            finded = True
+                            Turn=1
+                            elected=False
+                            while not elected:
+                                print("the "+str(Turn)+" trail")
+                                Turn=Turn+1
+
+                                tmpErr=False
+                                while not tmpErr:
+                                    try:
+                                        tl.find_element_by_xpath('.//*[@class="el-row"]/button[2]').click()
+                                        tmpErr=True
+                                    except Exception as eTmp:
+                                        tmpErr=False
+
+                                tmpErr=False
+                                while not tmpErr:
+                                    try:
+                                        msgText=driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[1]/div[2]/p').text
+                                        tmpErr=True
+                                    except Exception as eTmp:
+                                        tmpErr=False
+
+                                if not (driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[1]/div[2]/p').text=="确认选择课程吗？"):
+                                    elected=True
+                                    break
+                                driver.find_element_by_xpath(
+                                    '/html/body/div[3]/div/div[3]/button[2]').click()
+                                
+                            
+                            print("\nelected!\n")
+                            break
+                    break
+            if not finded:
+                curpages = curpages+1
                 driver.find_element_by_xpath(
                     '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
                 driver.find_element_by_xpath(
                     '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
                 driver.find_element_by_xpath(
-                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(str(curpages))
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys('%d' %curpages)
                 driver.find_element_by_xpath(
                     '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[1]').click()
                 time.sleep(1)
-                print(".", end="", flush=True)
+                print(".", end="")
+                pages = driver.find_element_by_class_name('number.active').text
+        
+        driver.find_element_by_xpath('//*[@id="xsxkapp"]/div/div[1]/ul/li[1]/i').click()
+        time.sleep(0.5)
+        print(".", end="")
+        driver.find_element_by_xpath('//*[@id="xsxkapp"]/div/div[1]/ul/li[4]').click()
+        time.sleep(1)
+        print(".", end="")
+
+        curpages = 1
+
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(str(curpages))
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[1]').click()
+        time.sleep(1)
+        print(".", end="")
+        pages = driver.find_element_by_class_name('number.active').text
+
+        while str(pages) == str(curpages) and not finded:
+            class_list = driver.find_elements_by_xpath(
+                '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[1]/div')
+            for cl in class_list:
+                class_num = cl.find_element_by_xpath(
+                    './/*[@class="el-card__body"]/div[2]/div/div[2]/span').text
+                print(".", end="")
+                if class_wanted[0:-5] == class_num:
+                    cl.click()
+                    time.sleep(0.2)
+                    print(".", end="")
+                    teacher_list=cl.find_elements_by_xpath(
+                        './/*[@class="card-list course-jxb el-row"]/div')
+                    for tl in teacher_list:
+                        print(".", end="")
+                        teacher_num=tl.find_element_by_xpath(
+                            './/*[@class="card-item head"]/div[1]/span[1]').text
+                        if class_wanted[-3:-1]==teacher_num[1:3]:
+                            print("\n\nfinded\n")
+                            finded = True
+                            Turn=1
+                            elected=False
+                            while not elected:
+                                print("the "+str(Turn)+" trail")
+                                Turn=Turn+1
+
+                                tmpErr=False
+                                while not tmpErr:
+                                    try:
+                                        tl.find_element_by_xpath('.//*[@class="el-row"]/button[2]').click()
+                                        tmpErr=True
+                                    except Exception as eTmp:
+                                        tmpErr=False
+
+                                tmpErr=False
+                                while not tmpErr:
+                                    try:
+                                        msgText=driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[1]/div[2]/p').text
+                                        tmpErr=True
+                                    except Exception as eTmp:
+                                        tmpErr=False
+
+                                if not (driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[1]/div[2]/p').text=="确认选择课程吗？"):
+                                    elected=True
+                                    break
+                                driver.find_element_by_xpath(
+                                    '/html/body/div[3]/div/div[3]/button[2]').click()
+                                
+                            
+                            print("\nelected!\n")
+                            break
+                    break
+            if not finded:
+                curpages = curpages+1
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys('%d' %curpages)
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[1]').click()
+                time.sleep(1)
+                print(".", end="")
                 pages = driver.find_element_by_class_name('number.active').text
 
-                while str(pages) == str(curpages) and not finded:
-                    class_list = driver.find_elements_by_xpath(
-                        '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[1]/div')
-                    for cl in class_list:
-                        class_num = cl.find_element_by_xpath(
-                            './/*[@class="el-card__body"]/div[2]/div/div[2]/span').text
-                        print(".", end="", flush=True)
+        driver.find_element_by_xpath('//*[@id="xsxkapp"]/div/div[1]/ul/li[1]/i').click()
+        time.sleep(0.5)
+        print(".", end="")
+        driver.find_element_by_xpath('//*[@id="xsxkapp"]/div/div[1]/ul/li[5]').click()
+        time.sleep(1)
+        print(".", end="")
 
-                        if class_wanted[0:-5] == class_num:
-                            cl.click()
-                            time.sleep(0.2)
-                            print(".", end="", flush=True)
-                            teacher_list = cl.find_elements_by_xpath(
-                                './/*[@class="card-list course-jxb el-row"]/div')
-                            for tl in teacher_list:
-                                print(".", end="", flush=True)
-                                teacher_num = tl.find_element_by_xpath(
-                                    './/*[@class="card-item head"]/div[1]/span[1]').text
-                                if class_wanted[-3:-1] == teacher_num[1:3]:
-                                    print("\n\nfinded\n", flush=True)
-                                    Turn = 1
-                                    elected = False
-                                    while not elected:
-                                        print("the " + str(Turn) + " trial", flush=True)
-                                        Turn = Turn + 1
+        curpages = 1
 
-                                        tmpErr = False
-                                        while not tmpErr:
-                                            try:
-                                                tl.find_element_by_xpath('.//*[@class="el-row"]/button[2]').click()
-                                                tmpErr = True
-                                            except Exception as eTmp:
-                                                tmpErr = False
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(str(curpages))
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[1]').click()
+        time.sleep(1)
+        print(".", end="")
+        pages = driver.find_element_by_class_name('number.active').text
 
-                                        tmpErr = False
-                                        while not tmpErr:
-                                            try:
-                                                msgText = driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[1]/div[2]/p').text
-                                                tmpErr = True
-                                            except Exception as eTmp:
-                                                tmpErr = False
+        while str(pages) == str(curpages) and not finded:
+            class_list = driver.find_elements_by_xpath(
+                '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[1]/div')
+            for cl in class_list:
+                class_num = cl.find_element_by_xpath(
+                    './/*[@class="el-card__body"]/div[2]/div/div[2]/span').text
+                print(".", end="")
+                if class_wanted[0:-5] == class_num:
+                    cl.click()
+                    time.sleep(0.2)
+                    print(".", end="")
+                    teacher_list=cl.find_elements_by_xpath(
+                        './/*[@class="card-list course-jxb el-row"]/div')
+                    for tl in teacher_list:
+                        print(".", end="")
+                        teacher_num=tl.find_element_by_xpath(
+                            './/*[@class="card-item head"]/div[1]/span[1]').text
+                        if class_wanted[-3:-1]==teacher_num[1:3]:
+                            print("\n\nfinded\n")
+                            finded = True
+                            Turn=1
+                            elected=False
+                            while not elected:
+                                print("the "+str(Turn)+" trail")
+                                Turn=Turn+1
+                                
+                                tmpErr=False
+                                while not tmpErr:
+                                    try:
+                                        tl.find_element_by_xpath('.//*[@class="el-row"]/button[2]').click()
+                                        tmpErr=True
+                                    except Exception as eTmp:
+                                        tmpErr=False
 
-                                        if not (driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[1]/div[2]/p').text == "确认选择课程吗？"):
-                                            elected = True
-                                            print(f"Successfully elected: {class_wanted}\n", flush=True)
-                                            classes_wanted.remove(class_wanted)  # 抢成功后移除课程
-                                            break
-                                        driver.find_element_by_xpath(
-                                            '/html/body/div[3]/div/div[3]/button[2]').click()
+                                tmpErr=False
+                                while not tmpErr:
+                                    try:
+                                        msgText=driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[1]/div[2]/p').text
+                                        tmpErr=True
+                                    except Exception as eTmp:
+                                        tmpErr=False
+
+                                if not (driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[1]/div[2]/p').text=="确认选择课程吗？"):
+                                    elected=True
                                     break
+                                driver.find_element_by_xpath(
+                                    '/html/body/div[3]/div/div[3]/button[2]').click()
+                                
+                            
+                            print("\nelected!\n")
                             break
-                    if not finded:
-                        curpages = curpages + 1
-                        driver.find_element_by_xpath(
-                            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
-                        driver.find_element_by_xpath(
-                            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
-                        driver.find_element_by_xpath(
-                            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys('%d' % curpages)
-                        driver.find_element_by_xpath(
-                            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[1]').click()
-                        time.sleep(1)
-                        print(".", end="", flush=True)
-                        pages = driver.find_element_by_class_name('number.active').text
+                    break
+            if not finded:
+                curpages = curpages+1
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys('%d' %curpages)
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[1]').click()
+                time.sleep(1)
+                print(".", end="")
+                pages = driver.find_element_by_class_name('number.active').text
 
-            if not classes_wanted:
-                print("All classes have been successfully elected!", flush=True)
+        driver.find_element_by_xpath('//*[@id="xsxkapp"]/div/div[1]/ul/li[1]/i').click()
+        time.sleep(0.5)
+        print(".", end="")
+        driver.find_element_by_xpath('//*[@id="xsxkapp"]/div/div[1]/ul/li[6]').click()
+        time.sleep(1)
+        print(".", end="")
+
+        curpages = 1
+
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(str(curpages))
+        driver.find_element_by_xpath(
+            '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[1]').click()
+        time.sleep(1)
+        print(".", end="")
+        pages = driver.find_element_by_class_name('number.active').text
+
+        while str(pages) == str(curpages) and not finded:
+            class_list = driver.find_elements_by_xpath(
+                '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[1]/div')
+            for cl in class_list:
+                class_num = cl.find_element_by_xpath(
+                    './/*[@class="el-card__body"]/div[2]/div/div[2]/span[1]').text\
+                    + " "\
+                    + cl.find_element_by_xpath(
+                    './/*[@class="el-card__body"]/div[2]/div/div[2]/span[2]').text
+                print(".", end="")
+                if class_wanted == class_num:
+                    print("\n\nfinded\n")
+                    finded = True
+                    Turn=1
+                    elected=False
+                    while not elected:
+                        print("the "+str(Turn)+" trail")
+                        Turn=Turn+1
+
+                        tmpErr=False
+                        while not tmpErr:
+                            try:
+                                tl.find_element_by_xpath('.//*[@class="el-row"]/button[3]').click()
+                                tmpErr=True
+                            except Exception as eTmp:
+                                tmpErr=False
+
+                        tmpErr=False
+                        while not tmpErr:
+                            try:
+                                msgText=driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[1]/div[2]/p').text
+                                tmpErr=True
+                            except Exception as eTmp:
+                                tmpErr=False
+
+                        if not (driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[1]/div[2]/p').text=="确认选择课程吗？"):
+                            elected=True
+                            break
+                        driver.find_element_by_xpath(
+                            '/html/body/div[3]/div/div[3]/button[2]').click()
+                                
+                        
+                    
+                    print("\nelected!\n")
+                    break
+            if not finded:
+                curpages = curpages+1
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys(Keys.BACKSPACE)
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[2]/div/input').send_keys('%d' %curpages)
+                driver.find_element_by_xpath(
+                    '//*[@id="xsxkapp"]/div/div[3]/div[3]/div/div[2]/span[1]').click()
+                time.sleep(1)
+                print(".", end="")
+                pages = driver.find_element_by_class_name('number.active').text
+
+        if not finded:
+            print("\n\nnot finded!\n")
 
         return
 
-    except IndexError as e:
-        print('\tterminated', flush=True)
+    except Exception as e:
+        print('\tterminated')
         error = True
         return
-
 
 
 if __name__ == '__main__':
@@ -225,7 +479,6 @@ if __name__ == '__main__':
     else:
         sys.exit()
 
-    classes_wanted = ["B15M0090 [08]","B15M0011 [04]"]
     error = False
     Login()
     if not error:
