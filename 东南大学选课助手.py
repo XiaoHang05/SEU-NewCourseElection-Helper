@@ -452,7 +452,10 @@ def main():
 
         return
 
-
+    except IndexError as e:
+        print('\tterminated')
+        error = True
+        return
 
 
 if __name__ == '__main__':
