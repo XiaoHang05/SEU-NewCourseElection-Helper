@@ -452,10 +452,10 @@ def main():
 
         return
 
-    except Exception as e:
-        print('\tterminated')
-        error = True
-        return
+    #except Exception as e:
+     #   print('\tterminated')
+      #  error = True
+       # return
 
 
 if __name__ == '__main__':
